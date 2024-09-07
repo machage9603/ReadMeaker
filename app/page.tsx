@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { useReadme } from './ReadmeContext'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/app/ui/button'
+import { Input } from '@/app/ui/input'
+import { Textarea } from '@/app/ui/textarea'
+import { Card, CardContent, CardHeader, CardTitle } from '@/app/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/app/ui/tabs'
 import { PlusCircle, Trash2 } from 'lucide-react'
+import { useReadme } from '@/app/hooks/useReadme'
 
-export default function ReadmeGenerator() {
+export default function App() {
   const { readmeState, updateReadmeState, updateSection, addSection, removeSection } = useReadme()
   const [newSectionTitle, setNewSectionTitle] = useState('')
 
