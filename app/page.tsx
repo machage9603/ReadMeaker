@@ -14,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/ui/dropdown-menu"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const FadeInWhenVisible = ({ children }: { children: React.ReactNode }) => {
   const controls = useAnimation()
