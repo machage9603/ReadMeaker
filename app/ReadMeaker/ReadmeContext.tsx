@@ -2,14 +2,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 
-interface ReadmeContextType {
-  readmeState: ReadmeState
-  updateReadmeState: (updates: Partial<ReadmeState>) => void
-  updateSection: (id: string, content: string) => void
-  addSection: (title: string) => void
-  removeSection: (id: string) => void
-}
-
 interface Section {
   id: string
   title: string
@@ -19,35 +11,41 @@ interface Section {
 interface ReadmeState {
   projectName: string
   description: string
+  uploadedFileName: string | null
+  uploadedFileUrl: string | null
   sections: Section[]
-  uploadedFileName: string
-  uploadedFileUrl: string
 }
 
+interface ReadmeContextType {
+  readmeState: ReadmeState
+  updateReadmeState: (updates: Partial<ReadmeState>) => void
+  updateSection: (id: string, content: string) => void
+  addSection: (title: string) => void
+  removeSection: (id: string) => void
+  resetReadme: () => void  // Add this line
+}
 
 const ReadmeContext = createContext<ReadmeContextType | undefined>(undefined)
 
-interface ReadmeProviderProps {
-  children: ReactNode
+const initialState: ReadmeState = {
+  projectName: '',
+  description: '',
+  uploadedFileName: null,
+  uploadedFileUrl: null,
+  sections: []
 }
 
-export function ReadmeProvider({ children }: ReadmeProviderProps) {
-  const [readmeState, setReadmeState] = useState<ReadmeState>({
-    projectName: '',
-    description: '',
-    sections: [],
-    uploadedFileName: '',
-    uploadedFileUrl: ''
-  })
+export const ReadmeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [readmeState, setReadmeState] = useState<ReadmeState>(initialState)
 
   const updateReadmeState = (updates: Partial<ReadmeState>) => {
-    setReadmeState(prevState => ({ ...prevState, ...updates }))
+    setReadmeState(prev => ({ ...prev, ...updates }))
   }
 
   const updateSection = (id: string, content: string) => {
-    setReadmeState(prevState => ({
-      ...prevState,
-      sections: prevState.sections.map(section =>
+    setReadmeState(prev => ({
+      ...prev,
+      sections: prev.sections.map(section =>
         section.id === id ? { ...section, content } : section
       )
     }))
@@ -59,35 +57,38 @@ export function ReadmeProvider({ children }: ReadmeProviderProps) {
       title,
       content: ''
     }
-    setReadmeState(prevState => ({
-      ...prevState,
-      sections: [...prevState.sections, newSection]
+    setReadmeState(prev => ({
+      ...prev,
+      sections: [...prev.sections, newSection]
     }))
   }
 
   const removeSection = (id: string) => {
-    setReadmeState(prevState => ({
-      ...prevState,
-      sections: prevState.sections.filter(section => section.id !== id)
+    setReadmeState(prev => ({
+      ...prev,
+      sections: prev.sections.filter(section => section.id !== id)
     }))
   }
 
-  const contextValue: ReadmeContextType = {
-    readmeState,
-    updateReadmeState,
-    updateSection,
-    addSection,
-    removeSection
+  const resetReadme = () => {
+    setReadmeState(initialState)
   }
 
   return (
-    <ReadmeContext.Provider value={contextValue}>
+    <ReadmeContext.Provider value={{
+      readmeState,
+      updateReadmeState,
+      updateSection,
+      addSection,
+      removeSection,
+      resetReadme
+    }}>
       {children}
     </ReadmeContext.Provider>
   )
 }
 
-export function useReadme(): ReadmeContextType {
+export const useReadme = () => {
   const context = useContext(ReadmeContext)
   if (context === undefined) {
     throw new Error('useReadme must be used within a ReadmeProvider')
