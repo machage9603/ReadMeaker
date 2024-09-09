@@ -1,5 +1,4 @@
 import '@/app/ui/global.css';
-import { Toaster } from "@/app/ui/toaster"
 import { ReadmeProvider } from './ReadmeContext'
 
 export default function RootLayout({

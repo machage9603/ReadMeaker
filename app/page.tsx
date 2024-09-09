@@ -9,7 +9,7 @@ import { Button } from '@/app/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/ui/card'
 import { Github, Linkedin, Twitter, ChevronLeft, ChevronRight } from 'lucide-react'
 
-const FadeInWhenVisible = ({ children }) => {
+const FadeInWhenVisible = ({ children }: { children: React.ReactNode }) => {
   const controls = useAnimation()
   const [ref, inView] = useInView()
 
@@ -35,12 +35,12 @@ const FadeInWhenVisible = ({ children }) => {
   )
 }
 
-const FeatureCarousel = ({ features }) => {
+const FeatureCarousel = ({ features }: { features: { title: string; image: string; description: string }[] }) => {
   const [currentFeature, setCurrentFeature] = useState(0)
   const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
-    let interval
+    let interval: string | number | NodeJS.Timeout | undefined
     if (isHovering) {
       interval = setInterval(() => {
         setCurrentFeature((prev) => (prev + 1) % features.length)
@@ -138,7 +138,7 @@ export default function LandingPage() {
                   className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden"
                 >
                   <Image
-                    src="/placeholder.svg?height=400&width=800"
+                    src="/hero.jpeg?height=100%&width=100%"
                     alt="Project Cover Image"
                     layout="fill"
                     objectFit="cover"
@@ -151,7 +151,7 @@ export default function LandingPage() {
                   transition={{ delay: 0.2, duration: 0.5 }}
                   className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none"
                 >
-                  Your Project Name
+                  READMEaker
                 </motion.h1>
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
@@ -159,7 +159,7 @@ export default function LandingPage() {
                   transition={{ delay: 0.3, duration: 0.5 }}
                   className="mx-auto max-w-[700px] text-muted-foreground md:text-xl"
                 >
-                  A brief one-line description of your amazing project
+                  Generate your professional README files with ease.
                 </motion.p>
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
@@ -185,7 +185,6 @@ export default function LandingPage() {
             </div>
           </section>
         </FadeInWhenVisible>
-
         <FadeInWhenVisible>
           <section id="about" className="w-full py-12 md:py-24 lg:py-32">
             <div className="container px-4 md:px-6">
@@ -202,18 +201,16 @@ export default function LandingPage() {
                     we believe can make a real difference.
                   </p>
                   <p className="mt-4">
-                    <Link href="https://www.holbertonschool.com" className="text-primary hover:underline">
-                      Learn more about Holberton School
+                    <Link href="https://www.mikemachage.tech" className="text-primary hover:underline">
+                      Learn more about Mike
                     </Link>
                   </p>
                 </div>
                 <div className="text-center lg:text-left">
-                  <h3 className="text-2xl font-bold mb-4">Meet the Team</h3>
+                  <h3 className="text-2xl font-bold mb-4">Meet the Mike</h3>
                   <div className="space-y-4">
                     {[
                       { name: "Team Member 1", github: "#", linkedin: "#", twitter: "#" },
-                      { name: "Team Member 2", github: "#", linkedin: "#", twitter: "#" },
-                      // Add more team members as needed
                     ].map((member, index) => (
                       <motion.div
                         key={index}
