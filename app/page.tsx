@@ -1,49 +1,27 @@
 'use client'
-// Indicates the use of client-side rendering in this Next.js component.
 
 import { useEffect, useState } from 'react'
-// Import React hooks for managing side effects (useEffect) and component state (useState).
-
 import Image from 'next/image'
-// Import Next.js's optimized image component for rendering images.
-
 import Link from 'next/link'
-// Import Next.js's component for client-side navigation between pages.
-
 import { motion, useAnimation } from 'framer-motion'
-// Import the 'motion' component and animation controls from Framer Motion for animations.
-
 import { useInView } from 'react-intersection-observer'
-// Import a hook to detect if an element is in the viewport.
-
 import { Button } from '@/app/ui/button'
-// Import a custom button component.
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/ui/card'
-// Import custom card components for organizing content.
-
 import { Github, Linkedin, Twitter, ChevronLeft, ChevronRight, Globe } from 'lucide-react'
-// Import icon components from the Lucide React library for use in the UI.
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/ui/dropdown-menu"
-// Import dropdown menu components for a language selection dropdown.
 
 const FadeInWhenVisible = ({ children }: { children: React.ReactNode }) => {
   const controls = useAnimation()
-  // Set up animation controls from Framer Motion.
-
   const [ref, inView] = useInView()
-  // Set up a reference to observe the element and track its visibility using Intersection Observer.
 
   useEffect(() => {
     if (inView) {
       controls.start('visible')
-      // Start the animation when the element comes into view.
     }
   }, [controls, inView])
 
@@ -52,65 +30,47 @@ const FadeInWhenVisible = ({ children }: { children: React.ReactNode }) => {
       ref={ref}
       animate={controls}
       initial="hidden"
-      // The element starts as hidden before animating into view.
-      transition={{ duration: 0.4 }}
-      // Animation transition set to last for 0.4 seconds.
+      transition={{ duration: 0.3 }}
       variants={{
         visible: { opacity: 1, scale: 1 },
         hidden: { opacity: 0, scale: 0.95 }
-        // Define animation states: visible and hidden with different opacity and scale values.
       }}
     >
       {children}
-      // Render the children components within this animated container.
     </motion.div>
   )
 }
 
 const FeatureCarousel = ({ features }: { features: { title: string; image: string; description: string }[] }) => {
   const [currentFeature, setCurrentFeature] = useState(0)
-  // State to track the current feature being displayed.
-
   const [isHovering, setIsHovering] = useState(false)
-  // State to track whether the user is hovering over the carousel.
 
   useEffect(() => {
     let interval: string | number | NodeJS.Timeout | undefined
     if (isHovering) {
       interval = setInterval(() => {
         setCurrentFeature((prev) => (prev + 1) % features.length)
-        // Change the current feature every 2 seconds while hovering.
-      }, 2000)
+      }, 3000) // Change feature every 3 seconds on hover
     }
     return () => clearInterval(interval)
-    // Clear the interval when the user stops hovering or the component unmounts.
   }, [isHovering, features.length])
 
   return (
     <div
       className="relative w-full max-w-3xl mx-auto"
-      // Wrapper for the feature carousel with a max width and centered alignment.
       onMouseEnter={() => setIsHovering(true)}
-      // Start the feature rotation when the user hovers over the carousel.
       onMouseLeave={() => setIsHovering(false)}
-      // Stop the feature rotation when the user stops hovering.
     >
       <div className="overflow-hidden">
-        // A container that hides the overflow content to ensure only one feature is visible at a time.
         <motion.div
           className="flex"
-          // A flex container for displaying the features horizontally.
           animate={{ x: `${-currentFeature * 100}%` }}
-          // Animate the carousel by shifting the current feature into view based on its index.
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          // Use a spring animation for smooth transitions between features.
         >
           {features.map((feature, index) => (
             <Card key={index} className="w-full flex-shrink-0 bg-gray-800 border-gray-700">
-              // Render each feature as a card component.
               <CardHeader>
                 <CardTitle className="text-green-400">{feature.title}</CardTitle>
-                // Display the title of the feature.
               </CardHeader>
               <CardContent>
                 <Image
@@ -119,10 +79,8 @@ const FeatureCarousel = ({ features }: { features: { title: string; image: strin
                   width={300}
                   height={200}
                   className="rounded-lg mb-4 mx-auto"
-                  // Display the feature image with specified dimensions and styling.
                 />
                 <CardDescription className="text-green-300">{feature.description}</CardDescription>
-                // Display the description of the feature.
               </CardContent>
             </Card>
           ))}
@@ -131,18 +89,14 @@ const FeatureCarousel = ({ features }: { features: { title: string; image: strin
       <button
         className="absolute top-1/2 left-4 transform -translate-y-1/2 text-green-400 hover:text-green-300"
         onClick={() => setCurrentFeature((prev) => (prev - 1 + features.length) % features.length)}
-        // Button to navigate to the previous feature in the carousel.
       >
         <ChevronLeft className="h-6 w-6" />
-        // Left arrow icon for navigation.
       </button>
       <button
         className="absolute top-1/2 right-4 transform -translate-y-1/2 text-green-400 hover:text-green-300"
         onClick={() => setCurrentFeature((prev) => (prev + 1) % features.length)}
-        // Button to navigate to the next feature in the carousel.
       >
         <ChevronRight className="h-6 w-6" />
-        // Right arrow icon for navigation.
       </button>
     </div>
   )
@@ -151,47 +105,47 @@ const FeatureCarousel = ({ features }: { features: { title: string; image: strin
 export default function LandingPage() {
   const features = [
     {
-      title: "Custom adding section feature",
+      title: "Add section feature",
       description: "Add sections to your readme. You can easily add a section with this feature.",
-      image: "/AddSection.png?height=200&width=300"
-      // Array of feature objects to be displayed in the carousel with title, description, and image.
+      image: "/addsection.png?height=200&width=300"
     },
     {
-      title: "Feature 2",
-      description: "Description of feature 2. Highlight its unique aspects.",
+      title: "Preview feature",
+      description: "See  your readme in real-time as you edit it.",
       image: "/placeholder.svg?height=200&width=300"
     },
     {
-      title: "Feature 3",
+      title: "Copy to clipboard feature",
+      description: "Description of feature 3. Emphasize its value proposition.",
+      image: "/placeholder.svg?height=200&width=300"
+    },
+    {
+      title: "Dwonload feature",
       description: "Description of feature 3. Emphasize its value proposition.",
       image: "/placeholder.svg?height=200&width=300"
     }
+
   ]
 
   return (
     <div className="flex flex-col min-h-screen font-mono text-green-400 bg-gray-900">
-      // Main layout wrapper with a dark background and green text, using a flex column layout.
       <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-gray-800/60">
-        // Sticky header with a semi-transparent background and border.
         <div className="container flex h-14 items-center justify-between">
-          // Flex container for the header content, including the logo, navigation, and language dropdown.
           <Link href="/" className="flex items-center space-x-2">
-            // Link to the home page.
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              // Animate the logo when hovered or clicked.
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
               <Image
                 src="/logo.png"
                 alt="READMEaker Logo"
                 width={32}
                 height={32}
-                // Logo image.
               />
             </motion.div>
             <span className="font-bold text-xl">READMEaker</span>
-            // Text displaying the app name.
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            // Navigation links to different sections of the page.
             <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
               <Link href="#features" className="transition-colors hover:text-green-300">Features</Link>
             </motion.div>
@@ -200,11 +154,13 @@ export default function LandingPage() {
             </motion.div>
           </nav>
           <DropdownMenu>
-            // Dropdown menu for language selection.
             <DropdownMenuTrigger asChild>
-              <motion.button whileHover={{ rotate: 20 }} whileTap={{ scale: 0.9 }} className="p-2 rounded-full hover:bg-gray-700">
+              <motion.button
+                whileHover={{ rotate: 20 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2 rounded-full hover:bg-gray-700"
+              >
                 <Globe className="h-5 w-5" />
-                // Globe icon for language selection.
               </motion.button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -213,42 +169,149 @@ export default function LandingPage() {
               <DropdownMenuItem>Français</DropdownMenuItem>
               <DropdownMenuItem>中文</DropdownMenuItem>
               <DropdownMenuItem>हिन्दी</DropdownMenuItem>
-              // Language options in the dropdown menu.
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </header>
-      <main className="flex-1 container mx-auto py-10">
-        // Main content area with padding for spacing.
+
+      <main className="flex-1">
         <FadeInWhenVisible>
-          <h1 className="text-5xl font-extrabold text-center leading-tight">Generate Your README in Seconds</h1>
-          // Animated heading with bold text, centered on the page.
+          <section className="relative w-full h-screen flex items-center justify-center">
+            <Image
+              src="/hero.jpeg"
+              alt="Project Cover Image"
+              layout="fill"
+              objectFit="cover"
+              priority
+              className="absolute inset-0 z-0"
+            />
+            <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
+            <div className="relative z-20 text-center text-green-400">
+              <motion.h1
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none mb-4"
+              >
+                READMEaker
+              </motion.h1>
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="mx-auto max-w-[700px] text-xl mb-8"
+              >
+                Generate your professional README files with ease.
+              </motion.p>
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-green-500 text-black hover:bg-green-400"
+                >
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Link href="/ReadMeaker">Get Started</Link>
+                  </motion.div>
+                </Button>
+              </motion.div>
+            </div>
+          </section>
         </FadeInWhenVisible>
-        <p className="text-lg text-center mt-4">A simple tool to create project README files with ease.</p>
-        // Subheading describing the purpose of the app.
-        <div id="features" className="mt-12">
-          <FeatureCarousel features={features} />
-          // Feature carousel component displaying the app's features.
-        </div>
+
+        <FadeInWhenVisible>
+          <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-800">
+            <div className="container px-4 md:px-6">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-green-400">
+                Key Features
+              </h2>
+              <FeatureCarousel features={features} />
+            </div>
+          </section>
+        </FadeInWhenVisible>
+
+        <FadeInWhenVisible>
+          <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-gray-900">
+            <div className="container px-4 md:px-6">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-green-400">
+                About the Project
+              </h2>
+              <div className="grid gap-12 lg:grid-cols-2">
+                <div className="text-center lg:text-left">
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Our Inspiration</h3>
+                  <p className="text-green-300 mb-4">
+                    This project was born out of a personal experience. As developers, we often found ourselves spending considerable time crafting README files for our projects. We realized that this process, while crucial, was often time-consuming and repetitive.
+                  </p>
+                  <p className="text-green-300 mb-4">
+                    Inspired by this challenge, we embarked on creating READMEaker as part of our Portfolio Project for Holberton School. What started as an assignment quickly evolved into a passion project, driven by our desire to streamline the README creation process for developers worldwide.
+                  </p>
+                  <p className="text-green-300">
+                    READMEaker is more than just a tool; it is our contribution to the developer community, aiming to save time and improve project documentation across the board. We believe that with READMEaker, we can make a real difference in how developers approach and create their project documentation.
+                  </p>
+                  <p className="mt-4">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Link href="https://www.mikemachage.tech" className="text-green-400 hover:underline">
+                        Learn more about Mike
+                      </Link>
+                    </motion.div>
+                  </p>
+                </div>
+                <div className="text-center lg:text-left">
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">Meet Mike</h3>
+                  <p className="text-green-300 mb-4">
+                    Mike Machage is a passionate full-stack developer with a keen interest in creating tools that enhance developer productivity. With a background in computer science and years of experience in web development, Mike brings a wealth of knowledge and creativity to the READMEaker project.
+                  </p>
+                  <div className="flex justify-center lg:justify-start space-x-4 mt-4">
+                    <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                      <Link href="https://github.com/mikemachage" className="text-green-400 hover:text-green-300">
+                        <Github className="h-6 w-6" />
+                        <span className="sr-only">GitHub</span>
+                      </Link>
+                    </motion.div>
+                    <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                      <Link href="https://www.linkedin.com/in/mikemachage/" className="text-green-400 hover:text-green-300">
+                        <Linkedin className="h-6 w-6" />
+                        <span className="sr-only">LinkedIn</span>
+                      </Link>
+                    </motion.div>
+                    <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                      <Link href="https://twitter.com/mikemachage" className="text-green-400 hover:text-green-300">
+                        <Twitter className="h-6 w-6" />
+                        <span className="sr-only">Twitter</span>
+                      </Link>
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-12 text-center">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Link href="https://github.com/mikemachage/readmeaker" className="text-green-400 hover:underline">
+                    View Project on GitHub
+                  </Link>
+                </motion.div>
+              </div>
+            </div>
+          </section>
+        </FadeInWhenVisible>
       </main>
-      <footer className="border-t border-gray-700 py-6">
-        // Footer section with a top border for separation.
-        <div className="container flex justify-between">
-          // Flex container for footer content, including social links and copyright.
-          <div className="flex space-x-4">
-            // Social media icons for GitHub, LinkedIn, and Twitter.
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-300">
-              <Github className="h-6 w-6" />
-            </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-300">
-              <Linkedin className="h-6 w-6" />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-green-300">
-              <Twitter className="h-6 w-6" />
-            </a>
-          </div>
-          <p className="text-sm">© 2024 READMEaker. All rights reserved.</p>
-          // Copyright notice.
+
+      <footer className="w-full py-6 bg-gray-800">
+        <div className="container px-4 md:px-6">
+          <p className="text-center text-sm text-green-400">
+            © 2024 READMEaker. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

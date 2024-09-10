@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/app/ui/dropdown-menu"
 import { motion } from 'framer-motion'
+import ReactMarkdown from 'react-markdown'
 
 export default function ReadmeGenerator() {
   const { readmeState, updateReadmeState, updateSection, addSection, removeSection, resetReadme } = useReadme()
@@ -232,7 +233,7 @@ export default function ReadmeGenerator() {
             </TabsContent>
             <TabsContent value="preview">
               <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="prose max-w-none mt-6 text-green-400">
+                <CardContent className="prose prose-invert max-w-none mt-6 text-green-400">
                   <div className="flex justify-end space-x-2 mb-4">
                     <Button onClick={copyToClipboard} className="bg-green-500 text-black hover:bg-green-400">
                       <Copy className="mr-2 h-4 w-4" /> Copy
@@ -241,21 +242,7 @@ export default function ReadmeGenerator() {
                       <Download className="mr-2 h-4 w-4" /> Download
                     </Button>
                   </div>
-                  <h1>{readmeState.projectName}</h1>
-                  <p>{readmeState.description}</p>
-                  {readmeState.uploadedFileUrl && (
-                    <img
-                      src={readmeState.uploadedFileUrl}
-                      alt={readmeState.uploadedFileName || "Uploaded file"}
-                      className="max-w-full h-auto"
-                    />
-                  )}
-                  {readmeState.sections.map((section) => (
-                    <div key={section.id}>
-                      <h2>{section.title}</h2>
-                      <p>{section.content}</p>
-                    </div>
-                  ))}
+                  <ReactMarkdown>{generateReadmeContent()}</ReactMarkdown>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -266,7 +253,7 @@ export default function ReadmeGenerator() {
       <footer className="w-full py-6 bg-gray-800">
         <div className="container px-4 md:px-6">
           <p className="text-center text-sm text-green-400">
-            © 2023 READMEaker. All rights reserved.
+            © 2024 READMEaker. All rights reserved.
           </p>
         </div>
       </footer>
