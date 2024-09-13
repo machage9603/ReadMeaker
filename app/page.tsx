@@ -70,15 +70,15 @@ const FeatureCarousel = ({ features }: { features: { title: string; image: strin
           {features.map((feature, index) => (
             <Card key={index} className="w-full flex-shrink-0 bg-gray-800 border-gray-700">
               <CardHeader>
-                <CardTitle className="text-green-400">{feature.title}</CardTitle>
+                <CardTitle className="text-green-300">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Image
                   src={feature.image}
                   alt={`${feature.title} screenshot`}
-                  width={300}
-                  height={200}
-                  className="rounded-lg mb-4 mx-auto"
+                  width={1500}
+                  height={400}
+                  className="rounded-lg mb-0 mx-auto"
                 />
                 <CardDescription className="text-green-300">{feature.description}</CardDescription>
               </CardContent>
@@ -105,24 +105,24 @@ const FeatureCarousel = ({ features }: { features: { title: string; image: strin
 export default function LandingPage() {
   const features = [
     {
-      title: "Add section feature",
-      description: "Add sections to your readme. You can easily add a section with this feature.",
-      image: "/addsection.png?height=200&width=300"
+      title: "AI generated responses",
+      description: "Generate your readme using AI.",
+      image: "/ai.png?height=400&width=300"
     },
     {
-      title: "Preview feature",
+      title: "Preview Contents of your file",
       description: "See  your readme in real-time as you edit it.",
-      image: "/placeholder.svg?height=200&width=300"
+      image: "/preview.png?height=400&width=300"
     },
     {
-      title: "Copy to clipboard feature",
-      description: "Description of feature 3. Emphasize its value proposition.",
-      image: "/placeholder.svg?height=200&width=300"
+      title: "Add Sections",
+      description: "Add more sections to your readme.",
+      image: "/addsection.png?height=400&width=300"
     },
     {
-      title: "Dwonload feature",
-      description: "Description of feature 3. Emphasize its value proposition.",
-      image: "/placeholder.svg?height=200&width=300"
+      title: "Download your readme",
+      description: "Download your readme as an markdown file locally.",
+      image: "/download.png?height=400&width=300"
     }
 
   ]

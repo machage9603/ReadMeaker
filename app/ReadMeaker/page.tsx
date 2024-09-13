@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useReadme } from '@/app/ReadMeaker/ReadmeContext'
+import { useReadme } from './ReadmeContext'
 import { Button } from '@/app/ui/button'
 import { Input } from '@/app/ui/input'
 import { Textarea } from '@/app/ui/textarea'
@@ -17,15 +17,33 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/app/ui/dropdown-menu"
-import { motion } from 'framer-motion'
-import ReactMarkdown from 'react-markdown'
+import dynamic from 'next/dynamic'
+
+const DynamicMotionDiv = dynamic(() => import('framer-motion').then((mod) => mod.motion.div), { ssr: false })
+const DynamicMotionButton = dynamic(() => import('framer-motion').then((mod) => mod.motion.button), { ssr: false })
+
+// Initialize the Google Generative AI client
+let genAI: any = null;
+
+if (typeof window !== 'undefined') {
+  import('@google/generative-ai').then((GoogleGenerativeAI) => {
+    genAI = new GoogleGenerativeAI.GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
+  });
+}
 
 export default function ReadmeGenerator() {
   const { readmeState, updateReadmeState, updateSection, addSection, removeSection, resetReadme } = useReadme()
   const [newSectionTitle, setNewSectionTitle] = useState('')
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const handleAddSection = () => {
     if (newSectionTitle) {
@@ -51,25 +69,29 @@ export default function ReadmeGenerator() {
 
   const copyToClipboard = () => {
     const content = generateReadmeContent()
-    navigator.clipboard.writeText(content).then(() => {
-      toast({
-        title: "Copied!",
-        description: "README content copied to clipboard.",
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(content).then(() => {
+        toast({
+          title: "Copied!",
+          description: "README content copied to clipboard.",
+        })
       })
-    })
+    }
   }
 
   const downloadReadme = () => {
     const content = generateReadmeContent()
-    const blob = new Blob([content], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'README.md'
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    if (typeof window !== 'undefined') {
+      const blob = new Blob([content], { type: 'text/markdown' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'README.md'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }
   }
 
   const generateReadmeContent = () => {
@@ -83,12 +105,51 @@ export default function ReadmeGenerator() {
     return content
   }
 
+  const generateAIContent = async () => {
+    setIsGenerating(true)
+    try {
+      if (!genAI) {
+        throw new Error("AI model not initialized");
+      }
+      // Generate content using the Gemini API
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const prompt = `Generate a README description for a project with the following details: ${aiPrompt}. The description should be concise, informative, and follow best practices for README files.`;
+
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+
+      if (text) {
+        updateReadmeState({ description: text });
+        toast({
+          title: "Success",
+          description: "AI-generated content has been added to the description.",
+        });
+      } else {
+        throw new Error("No content generated");
+      }
+    } catch (error) {
+      console.error('Error generating AI content:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate AI content. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  if (!isMounted) {
+    return null; // or a loading spinner
+  }
+
   return (
     <div className="flex flex-col min-h-screen font-mono text-green-400 bg-gray-900">
       <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-gray-800/60">
         <div className="container flex h-14 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <motion.div
+            <DynamicMotionDiv
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -98,18 +159,18 @@ export default function ReadmeGenerator() {
                 width={32}
                 height={32}
               />
-            </motion.div>
+            </DynamicMotionDiv>
             <span className="font-bold text-xl">READMEaker</span>
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <motion.button
+              <DynamicMotionButton
                 whileHover={{ rotate: 20 }}
                 whileTap={{ scale: 0.9 }}
                 className="p-2 rounded-full hover:bg-gray-700"
               >
                 <Globe className="h-5 w-5" />
-              </motion.button>
+              </DynamicMotionButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>English</DropdownMenuItem>
@@ -126,10 +187,26 @@ export default function ReadmeGenerator() {
         <div className="container mx-auto w-4/5">
           <h1 className="text-3xl font-bold mb-6 text-center">README Generator</h1>
           <Tabs defaultValue="edit">
-            <div className="flex justify-center mb-4">
-              <TabsList>
-                <TabsTrigger value="edit">Edit</TabsTrigger>
-                <TabsTrigger value="preview">Preview</TabsTrigger>
+            <div className="flex justify-center mb-4 space-x-4">
+              <TabsList className="grid grid-cols-3 gap-4">
+                <TabsTrigger
+                  value="edit"
+                  className="bg-gray-700 hover:bg-gray-600 text-green-400"
+                >
+                  Edit
+                </TabsTrigger>
+                <TabsTrigger
+                  value="ai"
+                  className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:from-green-400 hover:via-blue-500 hover:to-purple-600 text-black"
+                >
+                  AI
+                </TabsTrigger>
+                <TabsTrigger
+                  value="preview"
+                  className="bg-gray-700 hover:bg-gray-600 text-green-400"
+                >
+                  Preview
+                </TabsTrigger>
               </TabsList>
               <Button variant="outline" className="ml-2" onClick={resetReadme}>
                 <RotateCcw className="mr-2 h-4 w-4" /> Reset
@@ -231,9 +308,40 @@ export default function ReadmeGenerator() {
                 </Button>
               </div>
             </TabsContent>
+            <TabsContent value="ai">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-green-400">AI-Generated Content</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="aiPrompt" className="block text-sm font-medium text-green-400">
+                        Describe your project
+                      </label>
+                      <Textarea
+                        id="aiPrompt"
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder="Enter a description of your project for AI-generated content"
+                        rows={3}
+                        className="bg-gray-700 text-green-400 border-gray-600"
+                      />
+                    </div>
+                    <Button
+                      onClick={generateAIContent}
+                      disabled={isGenerating}
+                      className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 hover:from-green-400 hover:via-blue-500 hover:to-purple-600 text-black"
+                    >
+                      {isGenerating ? 'Generating...' : 'Generate AI Content'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
             <TabsContent value="preview">
               <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="prose prose-invert max-w-none mt-6 text-green-400">
+                <CardContent className="mt-6 text-green-400">
                   <div className="flex justify-end space-x-2 mb-4">
                     <Button onClick={copyToClipboard} className="bg-green-500 text-black hover:bg-green-400">
                       <Copy className="mr-2 h-4 w-4" /> Copy
@@ -242,7 +350,9 @@ export default function ReadmeGenerator() {
                       <Download className="mr-2 h-4 w-4" /> Download
                     </Button>
                   </div>
-                  <ReactMarkdown>{generateReadmeContent()}</ReactMarkdown>
+                  <pre className="whitespace-pre-wrap font-mono text-sm">
+                    {generateReadmeContent()}
+                  </pre>
                 </CardContent>
               </Card>
             </TabsContent>

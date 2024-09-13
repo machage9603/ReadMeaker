@@ -11,8 +11,8 @@ interface Section {
 interface ReadmeState {
   projectName: string
   description: string
-  uploadedFileName: string | null
-  uploadedFileUrl: string | null
+  uploadedFileName: string
+  uploadedFileUrl: string
   sections: Section[]
 }
 
@@ -22,30 +22,30 @@ interface ReadmeContextType {
   updateSection: (id: string, content: string) => void
   addSection: (title: string) => void
   removeSection: (id: string) => void
-  resetReadme: () => void  // Add this line
+  resetReadme: () => void
 }
-
-const ReadmeContext = createContext<ReadmeContextType | undefined>(undefined)
 
 const initialState: ReadmeState = {
   projectName: '',
   description: '',
-  uploadedFileName: null,
-  uploadedFileUrl: null,
+  uploadedFileName: '',
+  uploadedFileUrl: '',
   sections: []
 }
+
+const ReadmeContext = createContext<ReadmeContextType | undefined>(undefined)
 
 export const ReadmeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [readmeState, setReadmeState] = useState<ReadmeState>(initialState)
 
   const updateReadmeState = (updates: Partial<ReadmeState>) => {
-    setReadmeState(prev => ({ ...prev, ...updates }))
+    setReadmeState(prevState => ({ ...prevState, ...updates }))
   }
 
   const updateSection = (id: string, content: string) => {
-    setReadmeState(prev => ({
-      ...prev,
-      sections: prev.sections.map(section =>
+    setReadmeState(prevState => ({
+      ...prevState,
+      sections: prevState.sections.map(section =>
         section.id === id ? { ...section, content } : section
       )
     }))
@@ -57,16 +57,16 @@ export const ReadmeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       title,
       content: ''
     }
-    setReadmeState(prev => ({
-      ...prev,
-      sections: [...prev.sections, newSection]
+    setReadmeState(prevState => ({
+      ...prevState,
+      sections: [...prevState.sections, newSection]
     }))
   }
 
   const removeSection = (id: string) => {
-    setReadmeState(prev => ({
-      ...prev,
-      sections: prev.sections.filter(section => section.id !== id)
+    setReadmeState(prevState => ({
+      ...prevState,
+      sections: prevState.sections.filter(section => section.id !== id)
     }))
   }
 
