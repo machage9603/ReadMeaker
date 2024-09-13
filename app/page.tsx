@@ -227,8 +227,8 @@ export default function LandingPage() {
 
         <FadeInWhenVisible>
           <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-800">
-            <div className="container px-4 md:px-6">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-green-400">
+            <div className="container px-4 md:px-6 flex flex-col items-center text-center">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-orange-600">
                 Key Features
               </h2>
               <FeatureCarousel features={features} />
@@ -238,47 +238,35 @@ export default function LandingPage() {
 
         <FadeInWhenVisible>
           <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-gray-900">
-            <div className="container px-4 md:px-6">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-12 text-green-400">
-                About the Project
+            <div className="container px-4 md:px-6 flex flex-col items-center text-center">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-12 text-orange-500">
+                About the ReadMeaker
               </h2>
-              <div className="grid gap-12 lg:grid-cols-2">
-                <div className="text-center lg:text-left">
-                  <h3 className="text-2xl font-bold mb-4 text-green-400">Our Inspiration</h3>
+              <div className="grid gap-12 lg:grid-cols-1 items-center justify-cente">
+                <div className="text-center lg:text-center flex flex-col items-center">
+                  <h3 className="text-2xl font-bold mb-4 text-green-400">My Inspiration</h3>
                   <p className="text-green-300 mb-4">
-                    This project was born out of a personal experience. As developers, we often found ourselves spending considerable time crafting README files for our projects. We realized that this process, while crucial, was often time-consuming and repetitive.
+                    This project was born out of a personal experience. As a software engineer, I often find myself spending considerable time crafting README files for my projects. I realized that this process, while crucial, was often time-consuming and repetitive.
                   </p>
                   <p className="text-green-300 mb-4">
-                    Inspired by this challenge, we embarked on creating READMEaker as part of our Portfolio Project for Holberton School. What started as an assignment quickly evolved into a passion project, driven by our desire to streamline the README creation process for developers worldwide.
+                    Inspired by this challenge, I embarked on creating READMEaker as part of my Portfolio Project for Holberton School. What started as an assignment quickly evolved into a passion project, driven by my desire to streamline the README creation process for developers worldwide.
                   </p>
                   <p className="text-green-300">
-                    READMEaker is more than just a tool; it is our contribution to the developer community, aiming to save time and improve project documentation across the board. We believe that with READMEaker, we can make a real difference in how developers approach and create their project documentation.
+                    READMEaker is more than just a tool; it is my contribution to the developer community, aiming to save time and improve project documentation across the board. I believe that with READMEaker, I can make a real difference in how developers approach and create their project documentation.
                   </p>
-                  <p className="mt-4">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Link href="https://www.mikemachage.tech" className="text-green-400 hover:underline">
-                        Learn more about Mike
-                      </Link>
-                    </motion.div>
-                  </p>
-                </div>
-                <div className="text-center lg:text-left">
                   <h3 className="text-2xl font-bold mb-4 text-green-400">Meet Mike</h3>
                   <p className="text-green-300 mb-4">
-                    Mike Machage is a passionate full-stack developer with a keen interest in creating tools that enhance developer productivity. With a background in computer science and years of experience in web development, Mike brings a wealth of knowledge and creativity to the READMEaker project.
+                    I am a passionate full-stack developer with a keen interest in creating tools that enhance developer productivity. With a background in software engineering and experience in web development, I bring a wealth of knowledge and creativity to the READMEaker project.
                   </p>
                   <div className="flex justify-center lg:justify-start space-x-4 mt-4">
                     <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                      <Link href="https://github.com/mikemachage" className="text-green-400 hover:text-green-300">
+                      <Link href="https://github.com/mikemachage" className="text-green-400 hover:text-black-300">
                         <Github className="h-6 w-6" />
                         <span className="sr-only">GitHub</span>
                       </Link>
                     </motion.div>
                     <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                      <Link href="https://www.linkedin.com/in/mikemachage/" className="text-green-400 hover:text-green-300">
+                      <Link href="https://www.linkedin.com/in/mikemachage/" className="text-green-400 hover:text-blue-300">
                         <Linkedin className="h-6 w-6" />
                         <span className="sr-only">LinkedIn</span>
                       </Link>
@@ -297,7 +285,7 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link href="https://github.com/mikemachage/readmeaker" className="text-green-400 hover:underline">
+                  <Link href="https://github.com/machage9603/readmeaker" className="text-yellow-400 hover:underline">
                     View Project on GitHub
                   </Link>
                 </motion.div>
