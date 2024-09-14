@@ -260,19 +260,19 @@ export default function LandingPage() {
                   </p>
                   <div className="flex justify-center lg:justify-start space-x-4 mt-4">
                     <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                      <Link href="https://github.com/mikemachage" className="text-green-400 hover:text-black-300">
+                      <Link href="https://github.com/machage9603" className="text-green-400 hover:text-black-300">
                         <Github className="h-6 w-6" />
                         <span className="sr-only">GitHub</span>
                       </Link>
                     </motion.div>
                     <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                      <Link href="https://www.linkedin.com/in/mikemachage/" className="text-green-400 hover:text-blue-300">
+                      <Link href="https://www.linkedin.com/in/mike-machage/" className="text-green-400 hover:text-blue-300">
                         <Linkedin className="h-6 w-6" />
                         <span className="sr-only">LinkedIn</span>
                       </Link>
                     </motion.div>
                     <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
-                      <Link href="https://twitter.com/mikemachage" className="text-green-400 hover:text-green-300">
+                      <Link href="https://twitter.com/sermachage" className="text-green-400 hover:text-green-300">
                         <Twitter className="h-6 w-6" />
                         <span className="sr-only">Twitter</span>
                       </Link>
