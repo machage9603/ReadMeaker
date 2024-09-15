@@ -24,10 +24,12 @@ const DynamicMotionButton = dynamic(() => import('framer-motion').then((mod) => 
 
 // Initialize the Google Generative AI client
 let genAI: any = null;
+let aiModelPromise: Promise<any> = Promise.resolve(null);
 
 if (typeof window !== 'undefined') {
-  import('@google/generative-ai').then((GoogleGenerativeAI) => {
+  aiModelPromise = import('@google/generative-ai').then((GoogleGenerativeAI) => {
     genAI = new GoogleGenerativeAI.GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
+    return genAI; // Return the initialized genAI object
   });
 }
 
@@ -86,7 +88,7 @@ export default function ReadmeGenerator() {
 
   const handleAddSection = (title: string) => {
     if (title) {
-      addSection(title, templateSections[title as keyof typeof templateSections] || '')
+      addSection(title)
       setNewSectionTitle('')
     }
   }
@@ -156,8 +158,9 @@ export default function ReadmeGenerator() {
   }
 
   const generateAIContent = async () => {
-    setIsGenerating(true)
+    setIsGenerating(true);
     try {
+      const genAI = await aiModelPromise;
       if (!genAI) {
         throw new Error("AI model not initialized");
       }

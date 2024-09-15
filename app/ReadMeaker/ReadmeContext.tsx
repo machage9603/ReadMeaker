@@ -25,6 +25,8 @@ interface ReadmeContextType {
   resetReadme: () => void
 }
 
+const ReadmeContext = createContext<ReadmeContextType | undefined>(undefined)
+
 const initialState: ReadmeState = {
   projectName: '',
   description: '',
@@ -33,7 +35,43 @@ const initialState: ReadmeState = {
   sections: []
 }
 
-const ReadmeContext = createContext<ReadmeContextType | undefined>(undefined)
+const templateSections = {
+  "Features": `## Features
+
+- Easy to use
+- Customizable
+- Cross-platform compatibility
+- Regular updates`,
+  "Installation": `## Installation
+
+\`\`\`bash
+npm install my-project
+cd my-project
+npm start
+\`\`\``,
+  "Contributing": `## Contributing
+
+Contributions are always welcome!
+
+Please adhere to this project's \`code of conduct\`.
+
+1. Fork the Project
+2. Create your Feature Branch (\`git checkout -b feature/AmazingFeature\`)
+3. Commit your Changes (\`git commit -m 'Add some AmazingFeature'\`)
+4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
+5. Open a Pull Request`,
+  "Acknowledgements": `## Acknowledgements
+
+- [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
+- [Awesome README](https://github.com/matiassingers/awesome-readme)
+- [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)`,
+  "Authors": `## Authors
+
+- [@yourusername](https://www.github.com/yourusername)
+
+## 🚀 About Me
+I'm a full stack developer...`
+}
 
 export const ReadmeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [readmeState, setReadmeState] = useState<ReadmeState>(initialState)
@@ -55,7 +93,7 @@ export const ReadmeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const newSection: Section = {
       id: Date.now().toString(),
       title,
-      content: ''
+      content: templateSections[title as keyof typeof templateSections] || ''
     }
     setReadmeState(prevState => ({
       ...prevState,
