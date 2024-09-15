@@ -7,8 +7,8 @@ import '@/app/ui/global.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ReadMeaker - Create Beautiful READMEs',
-  description: 'Generate professional README files for your projects with ease.',
+  title: 'READMEaker - Create READMEs Effortlessly',
+  description: 'Create comprehensive, professional README files in seconds',
 }
 
 export default function RootLayout({
