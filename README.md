@@ -1,10 +1,8 @@
-# Readmeaker
+# READMEaker
 
-Readmeaker is an online ditor designed to help developers quickly create and generate a README file for their projects.
+Readmeaker is an online editor to help developers make readmes for their project.
 
-## Live Demo
-
-Check out the live demo [here](https://ppone.vercel.app/).
+Link to production site: [READMEaker](https://ppone.vercel.app/)
 
 ## Features
 
@@ -14,22 +12,9 @@ Check out the live demo [here](https://ppone.vercel.app/).
 - Edit the contents of each section
 - Copy or Download your readme file
 
-# ReadMeaker
-
-Readmeaker is an online editor to help developers make readmes for their project.
-
-Link to production site: [READMEaker](https://ppone.vercel.app/)
-
-## Features
-
-- Choose from list of sections to add to your readme
-- Edit the contents of each section
-- Drag and drop to rearrange sections
-- Download your readme file
-
 ## Installation
 
-No installation required. Access the app directly via the live demo link.
+No installation required. Access the app directly via the link to production site.
 
 ## Usage
 
