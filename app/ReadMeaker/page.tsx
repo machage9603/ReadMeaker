@@ -1,53 +1,68 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useReadme } from './ReadmeContext'
-import { Button } from '@/app/ui/button'
-import { Input } from '@/app/ui/input'
-import { Textarea } from '@/app/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle } from '@/app/ui/card'
-import { PlusCircle, Trash2, Upload, Copy, Download, Globe, RotateCcw, Coffee, X } from 'lucide-react'
-import { useToast } from "@/app/ui/use-toast"
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useReadme } from "./ReadmeContext";
+import { Button } from "@/app/ui/button";
+import { Input } from "@/app/ui/input";
+import { Textarea } from "@/app/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/app/ui/dropdown-menu"
-import dynamic from 'next/dynamic'
-import ReactMarkdown from 'react-markdown'
+  PlusCircle,
+  Trash2,
+  Upload,
+  Copy,
+  Download,
+  Globe,
+  RotateCcw,
+  Coffee,
+  X,
+  FileText,
+} from "lucide-react";
+import { useToast } from "@/app/ui/use-toast";
+import dynamic from "next/dynamic";
+import ReactMarkdown from "react-markdown";
 
-const DynamicMotionDiv = dynamic(() => import('framer-motion').then((mod) => mod.motion.div), { ssr: false })
-const DynamicMotionButton = dynamic(() => import('framer-motion').then((mod) => mod.motion.button), { ssr: false })
+const DynamicMotionDiv = dynamic(
+  () => import("framer-motion").then((mod) => mod.motion.div),
+  { ssr: false }
+);
+const DynamicMotionButton = dynamic(
+  () => import("framer-motion").then((mod) => mod.motion.button),
+  { ssr: false }
+);
 
 // Initialize the Google Generative AI client
 let genAI: any = null;
 let aiModelPromise: Promise<any> = Promise.resolve(null);
 
-if (typeof window !== 'undefined') {
-  aiModelPromise = import('@google/generative-ai').then((GoogleGenerativeAI) => {
-    genAI = new GoogleGenerativeAI.GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY as string);
-    return genAI; // Return the initialized genAI object
-  });
+if (typeof window !== "undefined") {
+  aiModelPromise = import("@google/generative-ai").then(
+    (GoogleGenerativeAI) => {
+      genAI = new GoogleGenerativeAI.GoogleGenerativeAI(
+        process.env.NEXT_PUBLIC_GEMINI_API_KEY as string
+      );
+      return genAI; // Return the initialized genAI object
+    }
+  );
 }
 
 const templateSections = {
-  "Features": `## Features
+  Features: `## Features
 
 - Easy to use
 - Customizable
 - Cross-platform compatibility
 - Regular updates`,
-  "Installation": `## Installation
+  Installation: `## Installation
 
 \`\`\`bash
 npm install my-project
 cd my-project
 npm start
 \`\`\``,
-  "Contributing": `## Contributing
+  Contributing: `## Contributing
 
 Contributions are always welcome!
 
@@ -58,104 +73,111 @@ Please adhere to this project's \`code of conduct\`.
 3. Commit your Changes (\`git commit -m 'Add some AmazingFeature'\`)
 4. Push to the Branch (\`git push origin feature/AmazingFeature\`)
 5. Open a Pull Request`,
-  "Acknowledgements": `## Acknowledgements
+  Acknowledgements: `## Acknowledgements
 
 - [Awesome Readme Templates](https://awesomeopensource.com/project/elangosundar/awesome-README-templates)
 - [Awesome README](https://github.com/matiassingers/awesome-readme)
 - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)`,
-  "Authors": `## Authors
+  Authors: `## Authors
 
 - [@yourusername](https://www.github.com/yourusername)
 
 ## 🚀 About Me
-I'm a full stack developer...`
-}
+I'm a full stack developer...`,
+};
 
 export default function ReadmeGenerator() {
-  const { readmeState, updateReadmeState, updateSection, addSection, removeSection, resetReadme } = useReadme()
-  const [newSectionTitle, setNewSectionTitle] = useState('')
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-  const [aiPrompt, setAiPrompt] = useState('')
-  const [isGenerating, setIsGenerating] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const { toast } = useToast()
-  const [isMounted, setIsMounted] = useState(false)
-  const [activeTab, setActiveTab] = useState('edit')
+  const {
+    readmeState,
+    updateReadmeState,
+    updateSection,
+    addSection,
+    removeSection,
+    resetReadme,
+  } = useReadme();
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+  const [isMounted, setIsMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState("edit");
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
   const handleAddSection = (title: string) => {
     if (title) {
-      addSection(title)
-      setNewSectionTitle('')
+      addSection(title);
+      setNewSectionTitle("");
     }
-  }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      setUploadedFile(file)
+      setUploadedFile(file);
       updateReadmeState({
         uploadedFileName: file.name,
-        uploadedFileUrl: URL.createObjectURL(file)
-      })
+        uploadedFileUrl: URL.createObjectURL(file),
+      });
     }
-  }
+  };
 
   const triggerFileUpload = () => {
-    fileInputRef.current?.click()
-  }
+    fileInputRef.current?.click();
+  };
 
   const resetUploadedImage = () => {
-    setUploadedFile(null)
+    setUploadedFile(null);
     updateReadmeState({
-      uploadedFileName: '',
-      uploadedFileUrl: ''
-    })
+      uploadedFileName: "",
+      uploadedFileUrl: "",
+    });
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''
+      fileInputRef.current.value = "";
     }
-  }
+  };
 
   const copyToClipboard = () => {
-    const content = generateReadmeContent()
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+    const content = generateReadmeContent();
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(content).then(() => {
         toast({
           title: "Copied!",
           description: "README content copied to clipboard.",
-        })
-      })
+        });
+      });
     }
-  }
+  };
 
   const downloadReadme = () => {
-    const content = generateReadmeContent()
-    if (typeof window !== 'undefined') {
-      const blob = new Blob([content], { type: 'text/markdown' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'README.md'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+    const content = generateReadmeContent();
+    if (typeof window !== "undefined") {
+      const blob = new Blob([content], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "README.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
-  }
+  };
 
   const generateReadmeContent = () => {
-    let content = `# ${readmeState.projectName}\n\n${readmeState.description}\n\n`
+    let content = `# ${readmeState.projectName}\n\n${readmeState.description}\n\n`;
     if (readmeState.uploadedFileName) {
-      content += `![${readmeState.uploadedFileName}](${readmeState.uploadedFileUrl})\n\n`
+      content += `![${readmeState.uploadedFileName}](${readmeState.uploadedFileUrl})\n\n`;
     }
-    readmeState.sections.forEach(section => {
-      content += `${section.content}\n\n`
-    })
-    return content
-  }
+    readmeState.sections.forEach((section) => {
+      content += `${section.content}\n\n`;
+    });
+    return content;
+  };
 
   const generateAIContent = async () => {
     setIsGenerating(true);
@@ -175,13 +197,14 @@ export default function ReadmeGenerator() {
         updateReadmeState({ description: text });
         toast({
           title: "Success",
-          description: "AI-generated content has been added to the description.",
+          description:
+            "AI-generated content has been added to the description.",
         });
       } else {
         throw new Error("No content generated");
       }
     } catch (error) {
-      console.error('Error generating AI content:', error);
+      console.error("Error generating AI content:", error);
       toast({
         title: "Error",
         description: "Failed to generate AI content. Please try again.",
@@ -193,11 +216,11 @@ export default function ReadmeGenerator() {
   };
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value)
-    if (value === 'ai') {
-      resetReadme()
+    setActiveTab(value);
+    if (value === "ai") {
+      resetReadme();
     }
-  }
+  };
 
   if (!isMounted) {
     return null;
@@ -208,59 +231,41 @@ export default function ReadmeGenerator() {
       <header className="sticky top-0 z-50 w-full border-b border-gray-700 bg-gray-800/95 backdrop-blur supports-[backdrop-filter]:bg-gray-800/60">
         <div className="container flex h-14 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <DynamicMotionDiv
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <Image
-                src="/logo.png"
-                alt="READMEaker Logo"
-                width={32}
-                height={32}
-              />
-            </DynamicMotionDiv>
-            <span className="font-bold text-xl">READMEaker</span>
+            <FileText className="h-8 w-8 text-green-600" />
+            <span className="font-bold text-xl text-green-600">READMEaker</span>
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <DynamicMotionButton
-                whileHover={{ rotate: 20 }}
-                whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-full hover:bg-gray-700"
-              >
-                <Globe className="h-5 w-5" />
-              </DynamicMotionButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>English</DropdownMenuItem>
-              <DropdownMenuItem>Español</DropdownMenuItem>
-              <DropdownMenuItem>Français</DropdownMenuItem>
-              <DropdownMenuItem>中文</DropdownMenuItem>
-              <DropdownMenuItem>हिन्दी</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </header>
 
       <main className="flex-1 py-8">
         <div className="container mx-auto w-4/5">
-          <h1 className="text-3xl font-bold mb-6 text-center">README Generator</h1>
+          <h1 className="text-3xl font-bold mb-6 text-center">
+            README Generator
+          </h1>
           <div className="flex justify-center mb-4 space-x-4">
             <Button
-              onClick={() => handleTabChange('edit')}
-              className={`${activeTab === 'edit' ? 'bg-green-500 text-black' : 'bg-gray-700'} hover:bg-green-400`}
+              onClick={() => handleTabChange("edit")}
+              className={`${
+                activeTab === "edit" ? "bg-green-500 text-black" : "bg-gray-700"
+              } hover:bg-green-400`}
             >
               Edit
             </Button>
             <Button
-              onClick={() => handleTabChange('ai')}
-              className={`${activeTab === 'ai' ? 'bg-purple-500 text-black' : 'bg-gray-700'} hover:bg-purple-400`}
+              onClick={() => handleTabChange("ai")}
+              className={`${
+                activeTab === "ai" ? "bg-purple-500 text-black" : "bg-gray-700"
+              } hover:bg-purple-400`}
             >
               AI
             </Button>
             <Button
-              onClick={() => handleTabChange('preview')}
-              className={`${activeTab === 'preview' ? 'bg-blue-500 text-black' : 'bg-gray-700'} hover:bg-blue-400`}
+              onClick={() => handleTabChange("preview")}
+              className={`${
+                activeTab === "preview"
+                  ? "bg-blue-500 text-black"
+                  : "bg-gray-700"
+              } hover:bg-blue-400`}
             >
               Preview
             </Button>
@@ -269,12 +274,14 @@ export default function ReadmeGenerator() {
             </Button>
           </div>
 
-          {activeTab === 'edit' && (
+          {activeTab === "edit" && (
             <div className="grid grid-cols-3 gap-4">
               <div className="col-span-1">
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-green-400">Template Sections</CardTitle>
+                    <CardTitle className="text-green-400">
+                      Template Sections
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -294,37 +301,52 @@ export default function ReadmeGenerator() {
               <div className="col-span-1">
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-green-400">Project Details</CardTitle>
+                    <CardTitle className="text-green-400">
+                      Project Details
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
-                        <label htmlFor="projectName" className="block text-sm font-medium text-green-400">
+                        <label
+                          htmlFor="projectName"
+                          className="block text-sm font-medium text-green-400"
+                        >
                           Project Name
                         </label>
                         <Input
                           id="projectName"
                           value={readmeState.projectName}
-                          onChange={(e) => updateReadmeState({ projectName: e.target.value })}
+                          onChange={(e) =>
+                            updateReadmeState({ projectName: e.target.value })
+                          }
                           placeholder="Enter project name"
                           className="bg-gray-700 text-green-400 border-gray-600"
                         />
                       </div>
                       <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-green-400">
+                        <label
+                          htmlFor="description"
+                          className="block text-sm font-medium text-green-400"
+                        >
                           Description
                         </label>
                         <Textarea
                           id="description"
                           value={readmeState.description}
-                          onChange={(e) => updateReadmeState({ description: e.target.value })}
+                          onChange={(e) =>
+                            updateReadmeState({ description: e.target.value })
+                          }
                           placeholder="Enter project description"
                           rows={3}
                           className="bg-gray-700 text-green-400 border-gray-600"
                         />
                       </div>
                       <div>
-                        <label htmlFor="fileUpload" className="block text-sm font-medium text-green-400">
+                        <label
+                          htmlFor="fileUpload"
+                          className="block text-sm font-medium text-green-400"
+                        >
                           Upload File (Image, GIF, etc.)
                         </label>
                         <input
@@ -336,11 +358,17 @@ export default function ReadmeGenerator() {
                           accept="image/*,.gif"
                         />
                         <div className="flex items-center space-x-2">
-                          <Button onClick={triggerFileUpload} className="mt-2 bg-green-500 text-black hover:bg-green-400">
+                          <Button
+                            onClick={triggerFileUpload}
+                            className="mt-2 bg-green-500 text-black hover:bg-green-400"
+                          >
                             <Upload className="mr-2 h-4 w-4" /> Upload File
                           </Button>
                           {uploadedFile && (
-                            <Button onClick={resetUploadedImage} className="mt-2 bg-red-500 text-black hover:bg-red-400">
+                            <Button
+                              onClick={resetUploadedImage}
+                              className="mt-2 bg-red-500 text-black hover:bg-red-400"
+                            >
                               <X className="mr-2 h-4 w-4" /> Reset Image
                             </Button>
                           )}
@@ -356,7 +384,10 @@ export default function ReadmeGenerator() {
                 </Card>
 
                 {readmeState.sections.map((section) => (
-                  <Card key={section.id} className="mt-4 bg-gray-800 border-gray-700">
+                  <Card
+                    key={section.id}
+                    className="mt-4 bg-gray-800 border-gray-700"
+                  >
                     <CardHeader>
                       <CardTitle className="flex justify-between items-center text-green-400">
                         {section.title}
@@ -373,7 +404,9 @@ export default function ReadmeGenerator() {
                     <CardContent>
                       <Textarea
                         value={section.content}
-                        onChange={(e) => updateSection(section.id, e.target.value)}
+                        onChange={(e) =>
+                          updateSection(section.id, e.target.value)
+                        }
                         placeholder={`Enter content for ${section.title}`}
                         rows={5}
                         className="bg-gray-700 text-green-400 border-gray-600"
@@ -389,7 +422,10 @@ export default function ReadmeGenerator() {
                     placeholder="New section title"
                     className="bg-gray-700 text-green-400 border-gray-600"
                   />
-                  <Button onClick={() => handleAddSection(newSectionTitle)} className="bg-green-500 text-black hover:bg-green-400">
+                  <Button
+                    onClick={() => handleAddSection(newSectionTitle)}
+                    className="bg-green-500 text-black hover:bg-green-400"
+                  >
                     <PlusCircle className="mr-2 h-4 w-4" /> Add Section
                   </Button>
                 </div>
@@ -397,7 +433,9 @@ export default function ReadmeGenerator() {
               <div className="col-span-1">
                 <Card className="bg-gray-800 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="text-green-400">Real-time Preview</CardTitle>
+                    <CardTitle className="text-green-400">
+                      Real-time Preview
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <ReactMarkdown className="prose prose-invert max-w-none">
@@ -409,16 +447,21 @@ export default function ReadmeGenerator() {
             </div>
           )}
 
-          {activeTab === 'ai' && (
+          {activeTab === "ai" && (
             <div className="grid grid-cols-2 gap-4">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-green-400">AI-Generated Content</CardTitle>
+                  <CardTitle className="text-green-400">
+                    AI-Generated Content
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <label htmlFor="aiPrompt" className="block text-sm font-medium text-green-400">
+                      <label
+                        htmlFor="aiPrompt"
+                        className="block text-sm font-medium text-green-400"
+                      >
                         Describe your project
                       </label>
                       <Textarea
@@ -435,14 +478,16 @@ export default function ReadmeGenerator() {
                       disabled={isGenerating}
                       className="bg-purple-500 text-black hover:bg-purple-400"
                     >
-                      {isGenerating ? 'Generating...' : 'Generate AI Content'}
+                      {isGenerating ? "Generating..." : "Generate AI Content"}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-green-400">Real-time Preview</CardTitle>
+                  <CardTitle className="text-green-400">
+                    Real-time Preview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ReactMarkdown className="prose prose-invert max-w-none">
@@ -453,14 +498,20 @@ export default function ReadmeGenerator() {
             </div>
           )}
 
-          {activeTab === 'preview' && (
+          {activeTab === "preview" && (
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="mt-6">
                 <div className="flex justify-end space-x-2 mb-4">
-                  <Button onClick={copyToClipboard} className="bg-green-500 text-black hover:bg-green-400">
+                  <Button
+                    onClick={copyToClipboard}
+                    className="bg-green-500 text-black hover:bg-green-400"
+                  >
                     <Copy className="mr-2 h-4 w-4" /> Copy
                   </Button>
-                  <Button onClick={downloadReadme} className="bg-blue-500 text-black hover:bg-blue-400">
+                  <Button
+                    onClick={downloadReadme}
+                    className="bg-blue-500 text-black hover:bg-blue-400"
+                  >
                     <Download className="mr-2 h-4 w-4" /> Download
                   </Button>
                 </div>
@@ -481,7 +532,7 @@ export default function ReadmeGenerator() {
             © 2024 READMEaker. All rights reserved.
           </p>
           <a
-            href="https://www.buymeacoffee.com/yourusername"
+            href="https://www.buymeacoffee.com/machage"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-2 text-yellow-400 hover:text-yellow-300"
@@ -492,5 +543,5 @@ export default function ReadmeGenerator() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
