@@ -2,7 +2,7 @@
 
 Readmeaker is an online editor to help developers make readmes for their project.
 
-Link to production site: [READMEaker](https://ppone.vercel.app/)
+Link to production site: [READMEaker](https://readme.works/)
 
 ## Features
 
@@ -18,7 +18,7 @@ No installation required. Access the app directly via the link to production sit
 
 ## Usage
 
-1. Go to the [READMEaker](https://ppone.vercel.app/).
+1. Go to the [READMEaker](https://readme.works/).
 2. Fill in your project details.
 3. Generate and download your README file.
 
@@ -46,5 +46,5 @@ Feedback is appreciated! Reach out on [Twitter](https://twitter.com/sermachage) 
 
 [MIT](/LICENSE)
 
-This readme was created with [READMEaker](https://ppone.vercel.app/)
+This readme was created with [READMEaker](https://readme.works/)
 
