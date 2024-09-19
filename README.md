@@ -2,6 +2,8 @@
 
 Readmeaker is an online editor to help developers make readmes for their project.
 
+If you are an avid reader check: [READMEaker blog](https://medium.com/@machage_/the-journey-to-readmeaker-a-personal-story-b54b4ec9f1c3)
+if you prefer slides: [READMeaker Slide Deck](https://medium.com/@machage_/the-journey-to-readmeaker-a-personal-story-b54b4ec9f1c3)
 Link to production site: [READMEaker](https://readme.works/)
 
 ## Features
