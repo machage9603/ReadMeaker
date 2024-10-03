@@ -1,0 +1,36 @@
+name: Auto-Update README
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [closed]
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Install necessary dependencies, e.g., Node.js for a JavaScript project
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Run your script to generate README
+      - name: Generate README
+        run: node generate-readme.js
+
+      # Commit and push updated README
+      - name: Commit and push README
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "chore: auto-update README"
+          git push
