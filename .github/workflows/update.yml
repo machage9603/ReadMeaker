@@ -24,7 +24,7 @@ jobs:
 
       # Run your script to generate README
       - name: Generate README
-        run: node generate-readme.js
+        run: node ./generate-readme.js
 
       # Commit and push updated README
       - name: Commit and push README
