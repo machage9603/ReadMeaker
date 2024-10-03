@@ -37,10 +37,13 @@ jobs:
         run: node generate-readme.js
 
       # Commit and push updated README
-      - name: Commit and push README
+      - name: Push changes
+        env:
+          TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add README.md
           git commit -m "chore: auto-update README"
-          git push
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/machage9603/readmeaker.git
+
