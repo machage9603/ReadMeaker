@@ -7,6 +7,10 @@ on:
   pull_request:
     types: [closed]
 
+permissions:
+  contents: write #grant bot permission to commit and push changes
+
+
 jobs:
   update-readme:
     runs-on: ubuntu-latest
