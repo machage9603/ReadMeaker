@@ -10,21 +10,27 @@ on:
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
-      # Install necessary dependencies, e.g., Node.js for a JavaScript project
+      # Ensure we are in the root directory (default, but being explicit)
+      - name: Set up working directory
+        run: cd ${{ github.workspace }}
+
+      # Install necessary dependencies (if needed for your project)
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
 
+      # Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # Run your script to generate README
+      # Run the generate-readme.js script (located in the root)
       - name: Generate README
-        run: node ./generate-readme.js
+        run: node generate-readme.js
 
       # Commit and push updated README
       - name: Commit and push README
