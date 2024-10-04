@@ -239,9 +239,6 @@ export default function ReadmeGenerator() {
 
       <main className="flex-1 py-8">
         <div className="container mx-auto w-4/5">
-          <h1 className="text-3xl font-bold mb-6 text-center">
-            README Generator
-          </h1>
           <div className="flex justify-center mb-4 space-x-4">
             <Button
               onClick={() => handleTabChange("edit")}
